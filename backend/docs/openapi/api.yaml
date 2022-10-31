@@ -1,0 +1,54 @@
+openapi: 3.0.0
+info:
+  title: Chat API
+  description: Simple Chat API
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080
+    description: Default Spring Boot server
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        sender_id:
+          type: integer
+          example: 10
+        date:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        text:
+          type: string
+          example: Hello
+      required:
+        - sender_id
+        - date
+        - text
+paths:
+  /messages:
+    get:
+      summary: Returns a list of all messages
+      responses:
+        '200':
+          description: A JSON array of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+    post:
+      summary: Send a message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Sent message
