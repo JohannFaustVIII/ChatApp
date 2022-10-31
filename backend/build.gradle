@@ -14,13 +14,13 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-web:2.7.5'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.data:spring-data-jpa:2.7.5'
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.4'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.12'
 	implementation 'io.springfox:springfox-swagger2:3.0.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
 }
 
 tasks.named('test') {
@@ -29,6 +29,7 @@ tasks.named('test') {
 
 openApiGenerate {
 	generatorName = "spring"
+	library = "spring-boot"
 
 	inputSpec = "$rootDir/docs/openapi/api.yaml"
 	outputDir = "$buildDir/generated/openapi"
@@ -36,10 +37,13 @@ openApiGenerate {
 	apiPackage = "org.faust.chat.api"
 	invokerPackage = "org.faust.chat.api"
 	modelPackage = "org.faust.chat.model"
+	templateDir = "$rootDir/src/main/resources/openapi-templates"
 
 	configOptions = [
 	        dateLibrary: "java8",
-			interfaceOnly: "true"
+			interfaceOnly: "true",
+			skipDefaultInterface: "true",
+			reactive: "true"
 	]
 }
 
