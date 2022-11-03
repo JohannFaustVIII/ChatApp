@@ -52,3 +52,23 @@ paths:
       responses:
         '201':
           description: Sent message
+  /messages/{id}:
+    put:
+      summary: Update a message
+      parameters:
+        - name: id
+          in: path
+          description: ID of message to update
+          required: true
+          schema:
+            type: integer
+          style: simple
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Updated message
