@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.data:spring-data-cassandra:3.4.5'
 	implementation 'org.springframework.data:spring-data-jpa:2.7.5'
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.4'
 	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.12'
