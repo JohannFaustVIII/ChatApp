@@ -12,7 +12,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           example: 5
         sender_id:
           type: integer
