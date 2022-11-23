@@ -42,4 +42,8 @@ public class MessageService {
         entity.setText(message.getText());
         return entity;
     }
+
+    public Mono<Void> deleteMessage(UUID id) {
+        return messageRepository.deleteById(id);
+    }
 }

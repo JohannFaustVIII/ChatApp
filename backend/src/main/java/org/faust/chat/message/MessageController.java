@@ -13,13 +13,13 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @RestController
-public class MessagesController implements MessagesApi {
+public class MessageController implements MessagesApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessagesController.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     private final MessageService messageService;
 
-    public MessagesController(@Autowired MessageService messageService) {
+    public MessageController(@Autowired MessageService messageService) {
         this.messageService = messageService;
     }
 
@@ -36,5 +36,10 @@ public class MessagesController implements MessagesApi {
     @Override
     public Mono<Message> messagesPost(Mono<Message> message, ServerWebExchange exchange) {
         return messageService.addMessage(message);
+    }
+
+    @Override
+    public Mono<Void> messagesIdDelete(UUID id, ServerWebExchange exchange) {
+        return messageService.deleteMessage(id);
     }
 }

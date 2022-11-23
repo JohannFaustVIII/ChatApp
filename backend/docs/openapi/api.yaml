@@ -53,7 +53,7 @@ paths:
               $ref: '#/components/schemas/Message'
       responses:
         '201':
-          description: Sent message
+          description: Sent the message
           content:
             application/json:
               schema:
@@ -78,8 +78,22 @@ paths:
               $ref: '#/components/schemas/Message'
       responses:
         '201':
-          description: Updated message
+          description: Updated the message
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Message'
+    delete:
+      summary: Delete a message
+      parameters:
+        - name: id
+          in: path
+          description: ID of message to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+          style: simple
+      responses:
+        '204':
+          description: Deleted the message
