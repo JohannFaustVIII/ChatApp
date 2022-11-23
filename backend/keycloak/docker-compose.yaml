@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  postgres:
+    container_name: postgresql-chat
+    image: postgres
+    environment:
+      POSTGRES_USER: 'keycloak'
+      POSTGRES_PASSWORD: 'keycloak'
+      POSTGRES_DB: 'keycloak'
+    volumes:
+      - 'postgresql_data:/var/lib/postgresql/data'
+  keycloak:
+    container_name: keycloak_chat
+    image: bitnami/keycloak:latest
+    environment:
+      KEYCLOAK_ADMIN_USER: 'kadmin'
+      KEYCLOAK_ADMIN_PASSWORD: 'kadmin'
+      KEYCLOAK_MANAGEMENT_USER: 'kmanager'
+      KEYCLOAK_MANAGEMENT_PASSWORD: 'kmanager'
+      KEYCLOAK_DATABASE_HOST: 'postgresql-chat'
+      KEYCLOAK_DATABASE_NAME: 'keycloak'
+      KEYCLOAK_DATABASE_USER: 'keycloak'
+      KEYCLOAK_DATABASE_PASSWORD: 'keycloak'
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  postgresql_data:
+    driver: local
