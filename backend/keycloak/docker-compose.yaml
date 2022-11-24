@@ -23,9 +23,13 @@ services:
       KEYCLOAK_DATABASE_USER: 'keycloak'
       KEYCLOAK_DATABASE_PASSWORD: 'keycloak'
     ports:
-      - "8080:8080"
+      - "8180:8080"
     depends_on:
       - postgres
+    volumes:
+      - type: bind
+        source: ./realms
+        target: /opt/keycloak/data/import
 
 volumes:
   postgresql_data:
