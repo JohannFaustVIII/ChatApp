@@ -1,6 +1,6 @@
 plugins {
 	id "org.openapi.generator" version "6.2.0"
-	id 'org.springframework.boot' version '2.7.5'
+	id 'org.springframework.boot' version '3.0.0'
 	id "io.spring.dependency-management" version "1.1.0"
 	id 'java'
 }
@@ -14,12 +14,16 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.springframework.data:spring-data-cassandra:3.4.5'
-	implementation 'org.springframework.data:spring-data-jpa:2.7.5'
+	implementation 'org.springframework.boot:spring-boot-starter-parent:3.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-security:3.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux:3.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.0.0'
+	implementation 'org.springframework.data:spring-data-cassandra:4.0.0'
+	implementation 'org.springframework.data:spring-data-jpa:3.0.0'
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.4'
 	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.6.12'
 	implementation 'io.springfox:springfox-swagger2:3.0.0'
+	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	compileOnly 'org.projectlombok:lombok:1.18.24'
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
