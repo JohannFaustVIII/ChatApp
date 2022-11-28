@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.server.WebFilterExchange;
+import org.springframework.security.web.server.authentication.logout.ServerLogoutHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
 @Component
-public class KeycloakLogoutHandler implements LogoutHandler {
+public class KeycloakLogoutHandler implements ServerLogoutHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakLogoutHandler.class);
     private final RestTemplate restTemplate;
@@ -21,13 +24,12 @@ public class KeycloakLogoutHandler implements LogoutHandler {
         this.restTemplate = restTemplate;
     }
 
-
     @Override
-    public void logout(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, Authentication authentication) {
-        logoutFromKeycloak((OidcUser) authentication.getPrincipal());
+    public Mono<Void> logout(WebFilterExchange exchange, Authentication authentication) {
+        return exchange.getExchange().getPrincipal().flatMap(principal -> logoutFromKeycloak((OidcUser) principal));
     }
 
-    private void logoutFromKeycloak(OidcUser user) {
+    private Mono<Void> logoutFromKeycloak(OidcUser user) {
         String endSessionEndpoint = user.getIssuer() + "/protocol/openid-connect/logout";
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(endSessionEndpoint)
@@ -36,9 +38,10 @@ public class KeycloakLogoutHandler implements LogoutHandler {
         ResponseEntity<String> logoutResponse = restTemplate.getForEntity(
                 builder.toUriString(), String.class);
         if (logoutResponse.getStatusCode().is2xxSuccessful()) {
-            logger.info("Successfulley logged out from Keycloak");
+            logger.info("Successfully logged out from Keycloak");
         } else {
             logger.error("Could not propagate logout to Keycloak");
         }
+        return Mono.empty();
     }
 }

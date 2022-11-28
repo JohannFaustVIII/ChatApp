@@ -5,10 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -27,17 +29,9 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests()
-                .requestMatchers("/messages")
-                .hasRole("USER")
-                .anyRequest()
-                .permitAll();
-        http.oauth2Client()
-                .and()
-                .logout()
-                .addLogoutHandler(keycloakLogoutHandler)
-                .logoutSuccessUrl("/");
+    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) throws Exception {
+        http.authorizeExchange(exchanges -> exchanges.pathMatchers("/messages*").hasRole("USER").anyExchange().permitAll());
+        http.oauth2Client().and().logout().logoutHandler(keycloakLogoutHandler).logoutUrl("/");
         return http.build();
     }
 }
