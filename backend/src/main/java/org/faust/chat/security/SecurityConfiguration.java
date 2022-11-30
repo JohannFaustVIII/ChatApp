@@ -27,11 +27,10 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) throws Exception {
+    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
         http.authorizeExchange()
-                .pathMatchers("/users*").hasRole("USER")
+                .pathMatchers("/messages*").hasRole("USER")
                 .anyExchange().permitAll();
-//        http.authorizeExchange(exchanges -> exchanges.pathMatchers("/messages*").hasRole("USER").anyExchange().permitAll());
         http.oauth2Client().and().logout().logoutHandler(keycloakLogoutHandler).logoutUrl("/");
         return http.build();
     }
