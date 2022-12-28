@@ -14,10 +14,9 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-parent:3.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security:3.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux:3.0.0'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.0.0'
 	implementation 'org.springframework.data:spring-data-cassandra:4.0.0'
 	implementation 'org.springframework.data:spring-data-jpa:3.0.0'
 	implementation 'org.openapitools:jackson-databind-nullable:0.2.4'
