@@ -14,6 +14,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security:3.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux:3.0.0'
