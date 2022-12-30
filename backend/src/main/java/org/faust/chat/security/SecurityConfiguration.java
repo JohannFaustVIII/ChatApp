@@ -21,8 +21,9 @@ public class SecurityConfiguration {
 
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
+        http.csrf().disable() // TODO: CSRF to fix later? or maybe not required because of JWT? to check later
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/access/*").permitAll()
                         .anyExchange().authenticated()
                 )
                 .oauth2Login()
