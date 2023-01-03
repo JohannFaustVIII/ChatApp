@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 public class AccessController {
 
     @PostMapping(path = "/register", produces = "application/json")
-    public Mono<Void> register(@Valid RegisterRequest registerRequest) {
+    public Mono<Void> register(@RequestBody @Valid RegisterRequest registerRequest) {
         return Mono.empty();
     }
 
@@ -28,7 +28,7 @@ public class AccessController {
     }
 
     @PostMapping(path = "/refresh", produces = "application/json")
-    public Mono<Token> refresh(@Valid RefreshRequest refreshRequest) {
+    public Mono<Token> refresh(@RequestBody @Valid RefreshRequest refreshRequest) {
         return Mono.just(new Token());
     }
 
