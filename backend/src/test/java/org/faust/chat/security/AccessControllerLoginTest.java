@@ -48,7 +48,7 @@ class AccessControllerLoginTest {
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
-                "Name can't be empty.",
+                "Name has to be at least 3 characters long.",
                 "Password has to be at least 8 characters long."));
     }
 
@@ -64,7 +64,22 @@ class AccessControllerLoginTest {
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
-                "Name can't be empty."));
+                "Name has to be at least 3 characters long."));
+    }
+
+    @Test
+    void returnBadRequestForTooShortLogin() {
+        String login = "A";
+        String password = "12345678";
+
+        // when
+        ResponseSpec response = webTestClient.post()
+                .uri("/access/login")
+                .bodyValue(new LoginRequest(login, password)).exchange();
+        // then
+        response.expectStatus().isBadRequest();
+        response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
+                "Name has to be at least 3 characters long."));
     }
 
     @Test

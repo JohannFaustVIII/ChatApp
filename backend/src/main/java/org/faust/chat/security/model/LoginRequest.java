@@ -1,6 +1,5 @@
 package org.faust.chat.security.model;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,8 @@ import org.springframework.validation.annotation.Validated;
 public class LoginRequest {
 
     @Getter
-    @NotEmpty(message = "Name can't be empty.")
+    @NotNull(message = "Name can't be empty.")
+    @Size(min = 3, message = "Name has to be at least 3 characters long.")
     private String name;
 
     @Getter
