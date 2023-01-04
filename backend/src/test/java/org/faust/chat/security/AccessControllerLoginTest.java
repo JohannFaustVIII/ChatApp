@@ -26,9 +26,8 @@ class AccessControllerLoginTest {
         String password = null;
 
         // when
-        ResponseSpec response = webTestClient.post()
-                .uri("/access/login")
-                .bodyValue(new LoginRequest(login, password)).exchange();
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -42,9 +41,8 @@ class AccessControllerLoginTest {
         String password = "";
 
         // when
-        ResponseSpec response = webTestClient.post()
-                .uri("/access/login")
-                .bodyValue(new LoginRequest(login, password)).exchange();
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -58,9 +56,8 @@ class AccessControllerLoginTest {
         String password = "12345678";
 
         // when
-        ResponseSpec response = webTestClient.post()
-                .uri("/access/login")
-                .bodyValue(new LoginRequest(login, password)).exchange();
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -73,9 +70,8 @@ class AccessControllerLoginTest {
         String password = "12345678";
 
         // when
-        ResponseSpec response = webTestClient.post()
-                .uri("/access/login")
-                .bodyValue(new LoginRequest(login, password)).exchange();
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -88,9 +84,8 @@ class AccessControllerLoginTest {
         String password = "";
 
         // when
-        ResponseSpec response = webTestClient.post()
-                .uri("/access/login")
-                .bodyValue(new LoginRequest(login, password)).exchange();
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -103,9 +98,8 @@ class AccessControllerLoginTest {
         String password = "1234";
 
         // when
-        ResponseSpec response = webTestClient.post()
-                .uri("/access/login")
-                .bodyValue(new LoginRequest(login, password)).exchange();
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -118,10 +112,15 @@ class AccessControllerLoginTest {
         String password = "12345678";
 
         // when
-        ResponseSpec response = webTestClient.post()
-                .uri("/access/login")
-                .bodyValue(new LoginRequest(login, password)).exchange();
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
         // then
         response.expectStatus().isOk();
+    }
+
+    private ResponseSpec makePostRequest(String uri, Object body) {
+        return webTestClient.post()
+                .uri(uri)
+                .bodyValue(body).exchange();
     }
 }

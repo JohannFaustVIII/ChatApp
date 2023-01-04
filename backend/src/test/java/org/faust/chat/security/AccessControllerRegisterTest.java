@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 @WebFluxTest(value = AccessController.class)
 @Import(WebFluxTestSecurityConfiguration.class)
@@ -26,9 +27,8 @@ public class AccessControllerRegisterTest {
         String email = null;
 
         // when
-        WebTestClient.ResponseSpec response = webTestClient.post()
-                .uri("/access/register")
-                .bodyValue(new RegisterRequest(login, password, matchingPassword, email)).exchange();
+        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -45,9 +45,8 @@ public class AccessControllerRegisterTest {
         String email = "";
 
         // when
-        WebTestClient.ResponseSpec response = webTestClient.post()
-                .uri("/access/register")
-                .bodyValue(new RegisterRequest(login, password, matchingPassword, email)).exchange();
+        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -64,9 +63,8 @@ public class AccessControllerRegisterTest {
         String email = "test@example.com";
 
         // when
-        WebTestClient.ResponseSpec response = webTestClient.post()
-                .uri("/access/register")
-                .bodyValue(new RegisterRequest(login, password, matchingPassword, email)).exchange();
+        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -81,9 +79,8 @@ public class AccessControllerRegisterTest {
         String email = "test@example.com";
 
         // when
-        WebTestClient.ResponseSpec response = webTestClient.post()
-                .uri("/access/register")
-                .bodyValue(new RegisterRequest(login, password, matchingPassword, email)).exchange();
+        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -98,9 +95,8 @@ public class AccessControllerRegisterTest {
         String email = "test@example.com";
 
         // when
-        WebTestClient.ResponseSpec response = webTestClient.post()
-                .uri("/access/register")
-                .bodyValue(new RegisterRequest(login, password, matchingPassword, email)).exchange();
+        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -115,9 +111,8 @@ public class AccessControllerRegisterTest {
         String email = "test@example";
 
         // when
-        WebTestClient.ResponseSpec response = webTestClient.post()
-                .uri("/access/register")
-                .bodyValue(new RegisterRequest(login, password, matchingPassword, email)).exchange();
+        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
@@ -132,11 +127,15 @@ public class AccessControllerRegisterTest {
         String email = "test@example.com";
 
         // when
-        WebTestClient.ResponseSpec response = webTestClient.post()
-                .uri("/access/register")
-                .bodyValue(new RegisterRequest(login, password, matchingPassword, email)).exchange();
+        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+
         // then
         response.expectStatus().isOk();
     }
 
+    private ResponseSpec makePostRequest(String uri, Object body) {
+        return webTestClient.post()
+                .uri(uri)
+                .bodyValue(body).exchange();
+    }
 }
