@@ -1,4 +1,4 @@
-package org.faust.chat.security.service;
+package org.faust.chat.security;
 
 public interface AuthenticationRepository {
 }

@@ -1,7 +1,8 @@
-package org.faust.chat.security;
+package org.faust.chat.access;
 
 import configuration.WebFluxTestSecurityConfiguration;
-import org.faust.chat.security.model.RegisterRequest;
+import org.faust.chat.access.AccessController;
+import org.faust.chat.access.model.LoginRequest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
+
 @WebFluxTest(value = AccessController.class)
 @Import(WebFluxTestSecurityConfiguration.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class AccessControllerRegisterTest {
+class AccessControllerLoginTest {
 
     @Autowired
     private WebTestClient webTestClient;
@@ -23,47 +25,39 @@ public class AccessControllerRegisterTest {
     void returnBadRequestForNullCredentials() {
         String login = null;
         String password = null;
-        String matchingPassword = null;
-        String email = null;
 
         // when
-        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
 
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
                 "Name can't be empty.",
-                "Password can't be empty.",
-                "E-mail can't be empty."));
+                "Password can't be empty."));
     }
 
     @Test
     void returnBadRequestForEmptyCredentials() {
         String login = "";
         String password = "";
-        String matchingPassword = "";
-        String email = "";
 
         // when
-        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
 
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
                 "Name has to be at least 3 characters long.",
-                "Password has to be at least 8 characters long.",
-                "E-mail has to be in correct format."));
+                "Password has to be at least 8 characters long."));
     }
 
     @Test
-    void returnBadRequestForTooShortLogin() {
-        String login = "A";
+    void returnBadRequestForEmptyLogin() {
+        String login = "";
         String password = "12345678";
-        String matchingPassword = "12345678";
-        String email = "test@example.com";
 
         // when
-        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
 
         // then
         response.expectStatus().isBadRequest();
@@ -72,14 +66,26 @@ public class AccessControllerRegisterTest {
     }
 
     @Test
-    void returnBadRequestForTooShortPassword() {
-        String login = "user";
-        String password = "123456";
-        String matchingPassword = "123456";
-        String email = "test@example.com";
+    void returnBadRequestForTooShortLogin() {
+        String login = "A";
+        String password = "12345678";
 
         // when
-        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
+
+        // then
+        response.expectStatus().isBadRequest();
+        response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
+                "Name has to be at least 3 characters long."));
+    }
+
+    @Test
+    void returnBadRequestForEmptyPassword() {
+        String login = "user";
+        String password = "";
+
+        // when
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
 
         // then
         response.expectStatus().isBadRequest();
@@ -88,46 +94,26 @@ public class AccessControllerRegisterTest {
     }
 
     @Test
-    void returnBadRequestForNotMatchingPasswords() {
+    void returnBadRequestForTooShortPassword() {
         String login = "user";
-        String password = "12345678";
-        String matchingPassword = "totally_different";
-        String email = "test@example.com";
+        String password = "1234";
 
         // when
-        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
 
         // then
         response.expectStatus().isBadRequest();
         response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
-                "Passwords have to match."));
+                "Password has to be at least 8 characters long."));
     }
 
     @Test
-    void returnBadRequestForWrongFormattedEmail() {
+    void returnOkForCorrectLengthCredentials() {
         String login = "user";
         String password = "12345678";
-        String matchingPassword = "12345678";
-        String email = "test@example";
 
         // when
-        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
-
-        // then
-        response.expectStatus().isBadRequest();
-        response.expectBody().jsonPath("errors").value(Matchers.containsInAnyOrder(
-                "E-mail has to be in correct format."));
-    }
-
-    @Test
-    void returnOkForCorrectCredentials() {
-        String login = "user";
-        String password = "12345678";
-        String matchingPassword = "12345678";
-        String email = "test@example.com";
-
-        // when
-        ResponseSpec response = makePostRequest("/access/register", new RegisterRequest(login, password, matchingPassword, email));
+        ResponseSpec response = makePostRequest("/access/login", new LoginRequest(login, password));
 
         // then
         response.expectStatus().isOk();

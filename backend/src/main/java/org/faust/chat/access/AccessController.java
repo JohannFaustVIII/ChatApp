@@ -1,10 +1,10 @@
-package org.faust.chat.security;
+package org.faust.chat.access;
 
 import jakarta.validation.Valid;
-import org.faust.chat.security.model.LoginRequest;
-import org.faust.chat.security.model.RefreshRequest;
-import org.faust.chat.security.model.RegisterRequest;
-import org.faust.chat.security.model.Token;
+import org.faust.chat.access.model.LoginRequest;
+import org.faust.chat.access.model.RefreshRequest;
+import org.faust.chat.access.model.RegisterRequest;
+import org.faust.chat.access.model.Token;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 

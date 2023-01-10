@@ -1,4 +1,4 @@
-package org.faust.chat.security.model;
+package org.faust.chat.access.model;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
