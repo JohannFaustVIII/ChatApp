@@ -2,12 +2,12 @@ package org.faust.chat.security;
 
 public interface AuthenticationRepository {
 
-    String authorize(String user, String password);
+    Token authorize(String user, String password);
 
-    boolean isValid(String token);
+    boolean isValid(String accessToken);
 
-    String refresh(String token);
+    Token refresh(String refreshToken);
 
-    boolean logout(String token);
+    boolean logout(String accessToken);
 
 }
