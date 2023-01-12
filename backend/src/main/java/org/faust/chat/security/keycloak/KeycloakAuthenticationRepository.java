@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Repository
 @RequiredArgsConstructor
 public class KeycloakAuthenticationRepository implements AuthenticationRepository {
@@ -34,7 +37,7 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
     // POST EVERYWHERE
     @Override
     public Token authorize(String user, String password) {
-        String authUrl = url + "/protocol/openid/token";
+        String authUrl = url + "/protocol/openid-connect/token";
         HttpEntity<String> request = makeAuthorizationRequest(user, password);
         ResponseEntity<String> response = restTemplate.postForEntity(authUrl, request, String.class);
         return mapResponseToToken(response);
@@ -50,7 +53,7 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
 
     @Override
     public Token refresh(String refreshToken) {
-        String authUrl = url + "/protocol/openid/token";
+        String authUrl = url + "/protocol/openid-connect/token";
         HttpEntity<String> request = makeRefreshRequest(refreshToken);
         ResponseEntity<String> response = restTemplate.postForEntity(authUrl, request, String.class);
         return mapResponseToToken(response);
@@ -65,44 +68,43 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
     }
 
     private HttpEntity<String> makeAuthorizationRequest(String user, String password) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("client_id", clientId);
-        jsonObject.put("client_secret", clientSecret);
-        jsonObject.put("grant_type", "password");
-        jsonObject.put("username", user);
-        jsonObject.put("password", password);
-        HttpHeaders headers = new HttpHeaders();
-        return new HttpEntity<>(jsonObject.toString(), headers);
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("client_id", clientId);
+        requestBody.put("client_secret", clientSecret);
+        requestBody.put("grant_type", "password");
+        requestBody.put("username", user);
+        requestBody.put("password", password);
+        String request = mapRequestBodyToXWWWForm(requestBody);
+        return new HttpEntity<>(request, defaultHeaders());
     }
 
     private HttpEntity<String> makeValidationRequest(String accessToken) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("client_id", clientId);
-        jsonObject.put("client_secret", clientSecret);
-        jsonObject.put("token", accessToken);
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
-        return request;
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("client_id", clientId);
+        requestBody.put("client_secret", clientSecret);
+        requestBody.put("token", accessToken);
+        String request = mapRequestBodyToXWWWForm(requestBody);
+        return new HttpEntity<>(request, defaultHeaders());
     }
 
     private HttpEntity<String> makeRefreshRequest(String refreshToken) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("client_id", clientId);
-        jsonObject.put("client_secret", clientSecret);
-        jsonObject.put("grant_type", "refresh_token");
-        jsonObject.put("refresh_token", refreshToken);
-        HttpHeaders headers = new HttpHeaders();
-        return new HttpEntity<>(jsonObject.toString(), headers);
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("client_id", clientId);
+        requestBody.put("client_secret", clientSecret);
+        requestBody.put("grant_type", "refresh_token");
+        requestBody.put("refresh_token", refreshToken);
+        String request = mapRequestBodyToXWWWForm(requestBody);
+        return new HttpEntity<>(request, defaultHeaders());
     }
 
     private HttpEntity<String> makeLogoutRequest(String accessToken) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("client_id", clientId);
-        jsonObject.put("client_secret", clientSecret);
-        jsonObject.put("token_type_hint", "access_token");
-        jsonObject.put("token", accessToken);
-        HttpHeaders headers = new HttpHeaders();
-        return new HttpEntity<>(jsonObject.toString(), headers);
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("client_id", clientId);
+        requestBody.put("client_secret", clientSecret);
+        requestBody.put("token_type_hint", "access_token");
+        requestBody.put("token", accessToken);
+        String request = mapRequestBodyToXWWWForm(requestBody);
+        return new HttpEntity<>(request, defaultHeaders());
     }
 
     private boolean getIfIsValid(ResponseEntity<String> response) {
@@ -127,5 +129,19 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
             e.printStackTrace();
             throw new RuntimeException(e); // TODO: implement something more descriptive
         }
+    }
+
+    private String mapRequestBodyToXWWWForm(Map<String, String> requestBody) {
+        return requestBody.entrySet()
+                .stream().map(entry -> entry.getKey() + "=" + entry.getValue())
+                .reduce((s1, s2) -> s1 + "&" + s2)
+                .orElse("");
+    }
+
+    private HttpHeaders defaultHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
+        return headers;
     }
 }

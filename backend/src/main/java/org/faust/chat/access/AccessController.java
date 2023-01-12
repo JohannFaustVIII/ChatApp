@@ -1,6 +1,7 @@
 package org.faust.chat.access;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.faust.chat.access.model.LoginRequest;
 import org.faust.chat.access.model.RefreshRequest;
 import org.faust.chat.access.model.RegisterRequest;
@@ -10,7 +11,10 @@ import reactor.core.publisher.Mono;
 
 @RestController()
 @RequestMapping("/access")
+@RequiredArgsConstructor
 public class AccessController {
+
+    private final AccessService accessService;
 
     @PostMapping(path = "/register", produces = "application/json")
     public Mono<Void> register(@RequestBody @Valid RegisterRequest registerRequest) {
@@ -19,7 +23,7 @@ public class AccessController {
 
     @PostMapping(path = "/login", produces = "application/json")
     public Mono<Token> login(@RequestBody @Valid LoginRequest loginRequest) {
-        return Mono.just(new Token());
+        return accessService.login(loginRequest);
     }
 
     @PostMapping(path = "/logout", produces = "application/json")
