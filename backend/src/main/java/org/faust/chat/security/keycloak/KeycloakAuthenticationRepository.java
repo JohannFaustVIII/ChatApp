@@ -4,25 +4,27 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
+import org.faust.chat.security.AuthenticatedUser;
 import org.faust.chat.security.AuthenticationRepository;
 import org.faust.chat.security.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
 public class KeycloakAuthenticationRepository implements AuthenticationRepository {
-    // TODO: headers may be a problem, to check
 
     private final RestTemplate restTemplate;
+    private final KeycloakRolesConverter converter;
 
     @Value("${keycloak.url}")
     private String url;
@@ -33,8 +35,10 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
     @Value("${keycloak.client-secret}")
     private String clientSecret;
 
+    @Value("${keycloak.host}")
+    private String host;
+
     // client registration - /clients-registrations/openid-connect ??? will it work for users
-    // POST EVERYWHERE
     @Override
     public Token authorize(String user, String password) {
         String authUrl = url + "/protocol/openid-connect/token";
@@ -67,6 +71,14 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
         return response.getStatusCode().is2xxSuccessful(); // TODO: could be better?
     }
 
+    @Override
+    public AuthenticatedUser getUserInfo(String accessToken) {
+        String validationUrl = url + "/protocol/openid-connect/token/introspect";
+        HttpEntity<String> request = makeValidationRequest(accessToken);
+        ResponseEntity<String> response = restTemplate.postForEntity(validationUrl, request, String.class);
+        return mapResponseToUser(accessToken, response);
+    }
+
     private HttpEntity<String> makeAuthorizationRequest(String user, String password) {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("client_id", clientId);
@@ -75,7 +87,7 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
         requestBody.put("username", user);
         requestBody.put("password", password);
         String request = mapRequestBodyToXWWWForm(requestBody);
-        return new HttpEntity<>(request, defaultHeaders());
+        return new HttpEntity<>(request, defaultHeaders(request.length()));
     }
 
     private HttpEntity<String> makeValidationRequest(String accessToken) {
@@ -84,7 +96,7 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
         requestBody.put("client_secret", clientSecret);
         requestBody.put("token", accessToken);
         String request = mapRequestBodyToXWWWForm(requestBody);
-        return new HttpEntity<>(request, defaultHeaders());
+        return new HttpEntity<>(request, defaultHeaders(request.length()));
     }
 
     private HttpEntity<String> makeRefreshRequest(String refreshToken) {
@@ -94,7 +106,7 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
         requestBody.put("grant_type", "refresh_token");
         requestBody.put("refresh_token", refreshToken);
         String request = mapRequestBodyToXWWWForm(requestBody);
-        return new HttpEntity<>(request, defaultHeaders());
+        return new HttpEntity<>(request, defaultHeaders(request.length()));
     }
 
     private HttpEntity<String> makeLogoutRequest(String accessToken) {
@@ -104,7 +116,7 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
         requestBody.put("token_type_hint", "access_token");
         requestBody.put("token", accessToken);
         String request = mapRequestBodyToXWWWForm(requestBody);
-        return new HttpEntity<>(request, defaultHeaders());
+        return new HttpEntity<>(request, defaultHeaders(request.length()));
     }
 
     private boolean getIfIsValid(ResponseEntity<String> response) {
@@ -131,6 +143,19 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
         }
     }
 
+    private AuthenticatedUser mapResponseToUser(String accessToken, ResponseEntity<String> response) {
+        ObjectMapper bodyMapper = new ObjectMapper();
+        try {
+            JsonNode root = bodyMapper.readTree(response.getBody());
+            String user = root.path("preferred_username").asText();
+            List<GrantedAuthority> authorities = converter.convert(root.get("realm_access").get("roles"));
+            return new KeycloakAuthenticatedUser(user, accessToken, authorities);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e); // TODO: implement something more descriptive
+        }
+    }
+
     private String mapRequestBodyToXWWWForm(Map<String, String> requestBody) {
         return requestBody.entrySet()
                 .stream().map(entry -> entry.getKey() + "=" + entry.getValue())
@@ -138,10 +163,12 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
                 .orElse("");
     }
 
-    private HttpHeaders defaultHeaders() {
+    private HttpHeaders defaultHeaders(int contentLength) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", "application/json");
         headers.add("Content-Type", "application/x-www-form-urlencoded");
+        headers.add("Content-Length", Integer.toString(contentLength));
+        headers.add("Host", host);
         return headers;
     }
 }

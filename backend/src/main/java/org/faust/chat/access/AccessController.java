@@ -6,6 +6,8 @@ import org.faust.chat.access.model.LoginRequest;
 import org.faust.chat.access.model.RefreshRequest;
 import org.faust.chat.access.model.RegisterRequest;
 import org.faust.chat.access.model.Token;
+import org.faust.chat.security.AuthenticatedUser;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -27,7 +29,8 @@ public class AccessController {
     }
 
     @PostMapping(path = "/logout", produces = "application/json")
-    public Mono<Void> logout() {
+    public Mono<Void> logout(@AuthenticationPrincipal AuthenticatedUser user) {
+        System.out.println(user);
         return Mono.empty();
     }
 

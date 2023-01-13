@@ -10,4 +10,5 @@ public interface AuthenticationRepository {
 
     boolean logout(String accessToken);
 
+    AuthenticatedUser getUserInfo(String accessToken);
 }
