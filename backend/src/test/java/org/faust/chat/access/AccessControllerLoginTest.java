@@ -1,16 +1,22 @@
 package org.faust.chat.access;
 
 import configuration.WebFluxTestSecurityConfiguration;
-import org.faust.chat.access.AccessController;
 import org.faust.chat.access.model.LoginRequest;
+import org.faust.chat.access.model.Token;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
+import reactor.core.publisher.Mono;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 
 @WebFluxTest(value = AccessController.class)
@@ -20,6 +26,15 @@ class AccessControllerLoginTest {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @MockBean
+    private AccessService accessService;
+
+    @BeforeEach
+    public void setUp() {
+        when(accessService.login(any(LoginRequest.class)))
+                .thenReturn(Mono.just(new Token("user_access_token")));
+    }
 
     @Test
     void returnBadRequestForNullCredentials() {
@@ -117,6 +132,7 @@ class AccessControllerLoginTest {
 
         // then
         response.expectStatus().isOk();
+        response.expectBody().jsonPath("token").isEqualTo("user_access_token");
     }
 
     private ResponseSpec makePostRequest(String uri, Object body) {
