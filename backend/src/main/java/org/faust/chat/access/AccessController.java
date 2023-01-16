@@ -30,7 +30,6 @@ public class AccessController {
 
     @PostMapping(path = "/logout", produces = "application/json")
     public Mono<Void> logout(@AuthenticationPrincipal AuthenticatedUser user) {
-        System.out.println(user);
         return Mono.empty();
     }
 

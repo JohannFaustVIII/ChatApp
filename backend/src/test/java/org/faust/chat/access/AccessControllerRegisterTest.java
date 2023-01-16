@@ -1,12 +1,13 @@
 package org.faust.chat.access;
 
 import configuration.WebFluxTestSecurityConfiguration;
-import org.faust.chat.access.AccessController;
 import org.faust.chat.access.model.RegisterRequest;
+import org.faust.chat.security.keycloak.KeycloakAuthenticationRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -19,6 +20,12 @@ public class AccessControllerRegisterTest {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @MockBean
+    private AccessService accessService;
+
+    @MockBean
+    private KeycloakAuthenticationRepository keycloakAuthenticationRepository;
 
     @Test
     void returnBadRequestForNullCredentials() {

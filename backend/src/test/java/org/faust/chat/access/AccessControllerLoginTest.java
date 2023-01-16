@@ -3,6 +3,7 @@ package org.faust.chat.access;
 import configuration.WebFluxTestSecurityConfiguration;
 import org.faust.chat.access.model.LoginRequest;
 import org.faust.chat.access.model.Token;
+import org.faust.chat.security.keycloak.KeycloakAuthenticationRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,9 @@ class AccessControllerLoginTest {
 
     @MockBean
     private AccessService accessService;
+
+    @MockBean
+    private KeycloakAuthenticationRepository keycloakAuthenticationRepository;
 
     @BeforeEach
     public void setUp() {
