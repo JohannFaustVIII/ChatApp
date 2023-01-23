@@ -1,10 +1,8 @@
 package org.faust.chat.message;
 
+import lombok.RequiredArgsConstructor;
 import org.faust.chat.api.MessagesApi;
 import org.faust.chat.model.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
@@ -14,16 +12,11 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @PreAuthorize("hasRole('USER')")
 public class MessageController implements MessagesApi {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
-
     private final MessageService messageService;
-
-    public MessageController(@Autowired MessageService messageService) {
-        this.messageService = messageService;
-    }
 
     @Override
     public Flux<Message> messagesGet(ServerWebExchange exchange) {

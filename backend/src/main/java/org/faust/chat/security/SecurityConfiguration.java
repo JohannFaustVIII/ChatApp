@@ -13,7 +13,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebFluxSecurity
-@EnableReactiveMethodSecurity(useAuthorizationManager = true)
+@EnableReactiveMethodSecurity(proxyTargetClass = true, useAuthorizationManager = true)
 public class SecurityConfiguration {
 
     private final KeycloakAuthFilter keycloakAuthFilter;

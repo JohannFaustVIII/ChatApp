@@ -1,19 +1,24 @@
 package org.faust.chat.message;
 
+import configuration.SecurityMocksConfiguration;
+import org.faust.chat.security.SecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 
 import static org.mockito.Mockito.when;
 
-@WebFluxTest(value = MessageController.class, useDefaultFilters = false)
+@ActiveProfiles("test")
+@WebFluxTest(value = MessageController.class)
+@Import({SecurityMocksConfiguration.class, SecurityConfiguration.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class MessageControllerTest {
 
@@ -24,7 +29,7 @@ class MessageControllerTest {
     private MessageService messageService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(messageService.getMessages()).thenReturn(Flux.empty());
     }
 
@@ -43,7 +48,6 @@ class MessageControllerTest {
         WebTestClient.ResponseSpec response = webTestClient
                 .get()
                 .uri("/messages")
-
                 .exchange();
         response.expectStatus().isForbidden();
     }
