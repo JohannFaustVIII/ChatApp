@@ -29,8 +29,8 @@ public class AccessController {
     }
 
     @PostMapping(path = "/logout", produces = "application/json")
-    public Mono<Void> logout(@AuthenticationPrincipal AuthenticatedUser user) {
-        return Mono.empty();
+    public Mono<Boolean> logout(@AuthenticationPrincipal AuthenticatedUser user) {
+        return accessService.logout(user.getToken());
     }
 
     @PostMapping(path = "/refresh", produces = "application/json")

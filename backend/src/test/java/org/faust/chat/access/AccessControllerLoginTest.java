@@ -1,9 +1,9 @@
 package org.faust.chat.access;
 
-import configuration.WebFluxTestSecurityConfiguration;
+import configuration.SecurityMocksConfiguration;
 import org.faust.chat.access.model.LoginRequest;
 import org.faust.chat.access.model.Token;
-import org.faust.chat.security.keycloak.KeycloakAuthenticationRepository;
+import org.faust.chat.security.SecurityConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import reactor.core.publisher.Mono;
@@ -19,9 +20,9 @@ import reactor.core.publisher.Mono;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-
+@ActiveProfiles("test")
 @WebFluxTest(value = AccessController.class)
-@Import(WebFluxTestSecurityConfiguration.class)
+@Import({SecurityMocksConfiguration.class, SecurityConfiguration.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class AccessControllerLoginTest {
 
@@ -30,9 +31,6 @@ class AccessControllerLoginTest {
 
     @MockBean
     private AccessService accessService;
-
-    @MockBean
-    private KeycloakAuthenticationRepository keycloakAuthenticationRepository;
 
     @BeforeEach
     public void setUp() {

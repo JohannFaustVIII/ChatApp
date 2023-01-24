@@ -18,4 +18,8 @@ public class AccessService {
                 .map(login -> authenticationRepository.authorize(login.getName(), login.getPassword()))
                 .map(token -> new Token(token.accessToken()));
     }
+
+    public Mono<Boolean> logout(String token) {
+        return Mono.just(authenticationRepository.logout(token));
+    }
 }
