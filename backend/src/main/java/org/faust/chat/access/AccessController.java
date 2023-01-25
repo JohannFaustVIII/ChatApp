@@ -35,7 +35,7 @@ public class AccessController {
 
     @PostMapping(path = "/refresh", produces = "application/json")
     public Mono<Token> refresh(@RequestBody @Valid RefreshRequest refreshRequest) {
-        return Mono.just(new Token());
+        return accessService.refresh(refreshRequest);
     }
 
     /*

@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class Token {
 
     private String token;
+
+    private String refreshToken;
 }

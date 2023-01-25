@@ -35,7 +35,7 @@ class AccessControllerLoginTest {
     @BeforeEach
     public void setUp() {
         when(accessService.login(any(LoginRequest.class)))
-                .thenReturn(Mono.just(new Token("user_access_token")));
+                .thenReturn(Mono.just(new Token("user_access_token", "user_refresh_token")));
     }
 
     @Test
@@ -135,6 +135,7 @@ class AccessControllerLoginTest {
         // then
         response.expectStatus().isOk();
         response.expectBody().jsonPath("token").isEqualTo("user_access_token");
+        response.expectBody().jsonPath("refreshToken").isEqualTo("user_refresh_token");
     }
 
     private ResponseSpec makePostRequest(String uri, Object body) {
