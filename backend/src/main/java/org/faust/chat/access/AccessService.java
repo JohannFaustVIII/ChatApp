@@ -3,6 +3,7 @@ package org.faust.chat.access;
 import lombok.RequiredArgsConstructor;
 import org.faust.chat.access.model.LoginRequest;
 import org.faust.chat.access.model.RefreshRequest;
+import org.faust.chat.access.model.RegisterRequest;
 import org.faust.chat.access.model.Token;
 import org.faust.chat.security.AuthenticationRepository;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,10 @@ public class AccessService {
         return Mono.just(refreshRequest)
                 .map(request -> authenticationRepository.refresh(request.getRefreshToken()))
                 .map(token -> new Token(token.accessToken(), token.refreshToken()));
+    }
+
+    public Mono<Boolean> register(RegisterRequest registerRequest) {
+        return Mono.just(registerRequest)
+                .map(request -> authenticationRepository.register(request.getName(), request.getPassword(), request.getEmail()));
     }
 }

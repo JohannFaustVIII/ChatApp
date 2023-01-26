@@ -19,8 +19,8 @@ public class AccessController {
     private final AccessService accessService;
 
     @PostMapping(path = "/register", produces = "application/json")
-    public Mono<Void> register(@RequestBody @Valid RegisterRequest registerRequest) {
-        return Mono.empty();
+    public Mono<Boolean> register(@RequestBody @Valid RegisterRequest registerRequest) {
+        return accessService.register(registerRequest);
     }
 
     @PostMapping(path = "/login", produces = "application/json")

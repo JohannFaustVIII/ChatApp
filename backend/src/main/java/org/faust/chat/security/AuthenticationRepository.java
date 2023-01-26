@@ -11,4 +11,6 @@ public interface AuthenticationRepository {
     boolean logout(String accessToken);
 
     AuthenticatedUser getUserInfo(String accessToken);
+
+    boolean register(String user, String password, String email);
 }
