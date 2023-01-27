@@ -129,39 +129,36 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
     }
 
     private boolean getIfIsValid(ResponseEntity<String> response) {
-        ObjectMapper bodyMapper = new ObjectMapper();
         try {
+            ObjectMapper bodyMapper = new ObjectMapper();
             JsonNode root = bodyMapper.readTree(response.getBody());
             return root.path("active").asBoolean();
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e); // TODO: implement something more descriptive
+            throw new KeycloakAuthenticationRepositoryException(e);
         }
     }
 
     private Token mapResponseToToken(ResponseEntity<String> response) {
-        ObjectMapper bodyMapper = new ObjectMapper();
         try {
+            ObjectMapper bodyMapper = new ObjectMapper();
             JsonNode root = bodyMapper.readTree(response.getBody());
             String accessToken = root.path("access_token").asText();
             String refreshToken = root.path("refresh_token").asText();
             return new Token(accessToken, refreshToken);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e); // TODO: implement something more descriptive
+            throw new KeycloakAuthenticationRepositoryException(e);
         }
     }
 
     private AuthenticatedUser mapResponseToUser(String accessToken, ResponseEntity<String> response) {
-        ObjectMapper bodyMapper = new ObjectMapper();
         try {
+            ObjectMapper bodyMapper = new ObjectMapper();
             JsonNode root = bodyMapper.readTree(response.getBody());
             String user = root.path("preferred_username").asText();
             List<GrantedAuthority> authorities = converter.convert(root.get("realm_access").get("roles"));
             return new KeycloakAuthenticatedUser(user, accessToken, authorities);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e); // TODO: implement something more descriptive
+            throw new KeycloakAuthenticationRepositoryException(e);
         }
     }
 }

@@ -128,15 +128,4 @@ class KeycloakSession implements AutoCloseable {
             throw new KeycloakSessionException("Session wasn't closed properly");
         }
     }
-
-    static class KeycloakSessionException extends RuntimeException {
-
-        public KeycloakSessionException(String message) {
-            super(message);
-        }
-
-        public KeycloakSessionException(Throwable cause) {
-            super(cause);
-        }
-    }
 }
