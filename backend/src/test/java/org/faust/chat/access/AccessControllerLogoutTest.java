@@ -14,6 +14,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,7 @@ public class AccessControllerLogoutTest {
         when(keycloakAuthenticationRepository.isValid("testtoken"))
                 .thenReturn(true);
         when(keycloakAuthenticationRepository.getUserInfo("testtoken"))
-                .thenReturn(new KeycloakAuthenticatedUser("testuser", "testtoken", Collections.emptyList()));
+                .thenReturn(new KeycloakAuthenticatedUser("testuser", "testtoken", Collections.emptyList(), UUID.randomUUID()));
         when(keycloakAuthenticationRepository.logout("testtoken"))
                 .thenReturn(true);
     }

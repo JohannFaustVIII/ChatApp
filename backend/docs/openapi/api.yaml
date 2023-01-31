@@ -27,7 +27,6 @@ components:
           type: string
           example: Hello
       required:
-        - sender_id
         - date
         - text
 paths:

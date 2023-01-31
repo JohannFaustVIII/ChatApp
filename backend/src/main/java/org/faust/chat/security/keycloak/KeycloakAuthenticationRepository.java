@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -155,8 +156,9 @@ public class KeycloakAuthenticationRepository implements AuthenticationRepositor
             ObjectMapper bodyMapper = new ObjectMapper();
             JsonNode root = bodyMapper.readTree(response.getBody());
             String user = root.path("preferred_username").asText();
+            UUID uuid = UUID.fromString(root.path("sub").asText());
             List<GrantedAuthority> authorities = converter.convert(root.get("realm_access").get("roles"));
-            return new KeycloakAuthenticatedUser(user, accessToken, authorities);
+            return new KeycloakAuthenticatedUser(user, accessToken, authorities, uuid);
         } catch (JsonProcessingException e) {
             throw new KeycloakAuthenticationRepositoryException(e);
         }

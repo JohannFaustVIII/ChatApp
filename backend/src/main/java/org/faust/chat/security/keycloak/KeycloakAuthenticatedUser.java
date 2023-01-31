@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class KeycloakAuthenticatedUser implements AuthenticatedUser {
@@ -13,10 +14,16 @@ public class KeycloakAuthenticatedUser implements AuthenticatedUser {
     private final String username;
     private final String token;
     private final List<GrantedAuthority> authorities;
+    private final UUID uuid;
 
     @Override
     public String getToken() {
         return token;
+    }
+
+    @Override
+    public UUID getUUID() {
+        return uuid;
     }
 
     @Override
