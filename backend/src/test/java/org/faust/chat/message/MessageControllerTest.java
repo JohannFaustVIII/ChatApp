@@ -1,6 +1,7 @@
 package org.faust.chat.message;
 
 import configuration.SecurityMocksConfiguration;
+import org.faust.chat.access.AccessService;
 import org.faust.chat.security.SecurityConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,9 @@ class MessageControllerTest {
 
     @MockBean
     private MessageService messageService;
+
+    @MockBean
+    private AccessService accessService;
 
     @BeforeEach
     void setUp() {
