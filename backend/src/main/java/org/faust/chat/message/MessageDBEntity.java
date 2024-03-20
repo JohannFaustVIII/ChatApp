@@ -34,7 +34,7 @@ public class MessageDBEntity {
     private LocalDateTime time;
 
     public Message toModel() {
-        org.faust.chat.model.Message result = new org.faust.chat.model.Message();
+        Message result = new Message();
         result.setId(id);
         result.setSenderId(senderId);
         result.setText(text);
