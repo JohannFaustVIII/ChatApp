@@ -73,10 +73,10 @@ paths:
       responses:
         '201':
           description: Sent the message
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Message'
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Message'
   /messages/{id}:
     patch:
       summary: Update a message
@@ -98,10 +98,10 @@ paths:
       responses:
         '201':
           description: Updated the message
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Message'
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Message'
     delete:
       summary: Delete a message
       parameters:

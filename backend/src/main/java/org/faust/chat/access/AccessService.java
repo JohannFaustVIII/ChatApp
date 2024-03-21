@@ -12,6 +12,8 @@ import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AccessService {
@@ -44,5 +46,11 @@ public class AccessService {
                 .map(context -> (AuthenticatedUser)context.getAuthentication().getPrincipal())
                 .map(AuthenticatedUser::getUUID)
                 .flatMap(uuid -> message.map(m -> m.senderId(uuid)));
+    }
+
+    public Mono<UUID> getRequesterId() {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(context -> (AuthenticatedUser)context.getAuthentication().getPrincipal())
+                .map(AuthenticatedUser::getUUID);
     }
 }
