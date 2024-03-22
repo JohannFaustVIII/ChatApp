@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.faust.chat.access.AccessService;
 import org.faust.chat.api.MessagesApi;
 import org.faust.chat.message.command.MessageCommandService;
+import org.faust.chat.message.query.MessageQueryService;
+import org.faust.chat.message.query.model.MessageById;
 import org.faust.chat.model.CreateMessage;
 import org.faust.chat.model.DeleteMessage;
 import org.faust.chat.model.EditMessage;
@@ -29,14 +31,18 @@ public class MessageController implements MessagesApi {
 
     private final MessageCommandService messageCommandService;
 
+    private final MessageQueryService messageQueryService;
+
     @Override
     public Flux<Message> messagesGet(ServerWebExchange exchange) {
-        return messageService.getMessages();
+        return messageQueryService.getAllMessages();
     }
 
     @Override
     public Mono<Message> messagesIdGet(UUID id, ServerWebExchange exchange) {
-        return null;
+        return Mono.just(id)
+                .map(MessageById::new)
+                .flatMap(messageQueryService::getMessageById);
     }
 
     @Override
