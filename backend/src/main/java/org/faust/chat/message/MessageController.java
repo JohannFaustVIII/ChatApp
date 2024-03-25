@@ -66,7 +66,6 @@ public class MessageController implements MessagesApi {
                 .flatMap(
                         message -> accessService.getRequesterId()
                                 .map(userId -> new org.faust.chat.message.command.model.CreateMessage(
-                                        UUID.randomUUID(), // TODO: CHANGE IT
                                         userId,
                                         message.getCreationDate().toLocalDateTime(),
                                         LocalDateTime.now(),
@@ -83,7 +82,7 @@ public class MessageController implements MessagesApi {
                                 .map(userId -> new org.faust.chat.message.command.model.DeleteMessage(
                                         id,
                                         userId,
-                                        message.getDeleteDate().toLocalDateTime(), // TODO: change to request
+                                        message.getDeleteDate().toLocalDateTime(),
                                         LocalDateTime.now())
                                 ))
                 .flatMap(messageCommandService::deleteMessage);
